@@ -1,6 +1,5 @@
-##AUTHOR: Juan Diego Tascón
-##EMAIL: juantascon@horlux.org
-##CREATED: 2014-05-05
+原作者是Juan Diego Tascón，我(Insion Ng)只修复了Golang的部分用来作库用。
+
 
 # 1. Charts:
 
@@ -10,8 +9,7 @@ One thing is missing though, the example images on the description had a
 weird X axis, it is more useful[1][2]  if the x axis represents
 time, in this implementation it represents the number of past days.
 
-* [1] [stockcharts.com](http://stockcharts.com/help/doku.php?id=chart_school:technical_indicators:bollinger_bands)
-* [2] [biz.yahoo.com](http://biz.yahoo.com/charts/guide13.html)
+* [1] stockcharts 和 yahoo 的链接等数据已经在时间长河里失效，临时改用一个csv.gz文件作为数据源，后面有时间再改进。
 
 # 2. Investment Strategies:
 
@@ -54,18 +52,10 @@ the stock market is too caotic, with way too many variables, this makes
 it hard to define completely safe invesment strategies, there will always
 be risk involved.
 
-# 3 Python:
 
-* bolly.py:
-    * generates (outputs to $PWD/$SYMBOL.png) bollinger bands, ex: bolly.py plot AMZN FB
-    * prints wether or not you should invest given a strategy, ex: bolly.py suggest AMZN FB -s moredown
+# 3 GO:
 
-* analizer.py:
-    * analyzes which strategies are better
-
-# 4 GO:
-
-* main.go: 
+* test/main.go: 
     * generates (outputs to $PWD/$SYMBOL.png) bollinger bands, ex: go run main.go -p AMZN FB
     * prints wether or not you should invest given a strategy, ex: go run main.go -s moredown AMZN FB
     * each symbol is processed using goroutines so that blocking syscalls won't stop other symbol's processing
