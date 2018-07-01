@@ -1,16 +1,16 @@
 package main
 
 import (
-	"flag"
 	"fmt"
+	"sync"
+
 	"github.com/insionng/bollinger-bands/bollinger/bands"
 	"github.com/insionng/bollinger-bands/bollinger/plot"
 	"github.com/insionng/bollinger-bands/bollinger/strategies"
-	"sync"
 )
 
-// Calculate investment suggestion using strategy on each given symbol
-func parallelSuggest(symbols []string, strategy string) {
+//Suggest 利用每个策略代号计算投资建议
+func Suggest(symbols []string, strategy string) (suggest bool) {
 	// default strategy
 	fn := strategies.MoreDown
 
@@ -34,11 +34,11 @@ func parallelSuggest(symbols []string, strategy string) {
 
 	for _, symbol := range symbols {
 		go func(symbol string) {
-			all := bands.All(symbol)
+			all := bands.CalculatesBands(symbol)
 			if fn(all) {
-				fmt.Println("Invest [", symbol, "] YES")
+				suggest = true
 			} else {
-				fmt.Println("Invest [", symbol, "] NO")
+				suggest = false
 			}
 			wg.Done()
 		}(symbol)
@@ -46,10 +46,12 @@ func parallelSuggest(symbols []string, strategy string) {
 
 	// wait for execution of all goroutines
 	wg.Wait()
+	return
+
 }
 
-// Executes plot on each given symbol
-func parallelPlot(symbols []string) {
+//Plot 根据代号执行绘图
+func Plot(symbols []string) {
 
 	// process each symbol in parallel
 	var wg sync.WaitGroup
@@ -57,9 +59,9 @@ func parallelPlot(symbols []string) {
 
 	for _, symbol := range symbols {
 		go func(symbol string) {
-			all := bands.All(symbol)
+			all := bands.CalculatesBands(symbol)
 			plot.PlotBands(symbol, all)
-			fmt.Println("Plot [", symbol, "] OK")
+			fmt.Println("Plot [", symbol, "] Okay")
 			wg.Done()
 		}(symbol)
 	}
@@ -69,19 +71,9 @@ func parallelPlot(symbols []string) {
 }
 
 func main() {
-	args := flag.String("s", "moredown", "suggests investement using given strategy, available: moredown, moreup, uponce, downonce")
-	argp := flag.Bool("p", false, "calculates and saves bollinger bands as SYMBOL.png")
-	flag.Parse()
-	symbols := flag.Args()
 
-	if len(symbols) == 0 {
-		fmt.Println("at least one symbol is required")
-		return
-	}
+	var symbols = []string{"Bitcoin"}
 
-	if *argp {
-		parallelPlot(symbols)
-	} else {
-		parallelSuggest(symbols, *args)
-	}
+	Plot(symbols)
+	fmt.Println(Suggest(symbols, "moreup"))
 }

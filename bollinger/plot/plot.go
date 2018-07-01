@@ -1,19 +1,22 @@
 package plot
 
 import (
-	"code.google.com/p/plotinum/plot"
-	"code.google.com/p/plotinum/plotter"
 	"fmt"
-	"github.com/insionng/bollinger-bands/bollinger/bands"
 	"image/color"
 	"log"
+
+	"code.google.com/p/plotinum/plot"
+	"code.google.com/p/plotinum/plotter"
+	"github.com/insionng/bollinger-bands/bollinger/bands"
 )
 
+//PlotBands 绘制带宽
 func PlotBands(symbol string, all []bands.Band) {
-	dclose := make(plotter.XYs, len(all))
-	dsma := make(plotter.XYs, len(all))
-	dup := make(plotter.XYs, len(all))
-	ddown := make(plotter.XYs, len(all))
+	n := len(all)
+	dclose := make(plotter.XYs, n)
+	dsma := make(plotter.XYs, n)
+	dup := make(plotter.XYs, n)
+	ddown := make(plotter.XYs, n)
 
 	for i, b := range all {
 		dclose[i].X = float64(-1 * i)
@@ -35,7 +38,7 @@ func PlotBands(symbol string, all []bands.Band) {
 	}
 
 	p.Title.Text = fmt.Sprintf("Bollinger Bands: %s", symbol)
-	p.X.Label.Text = "Time (Days)"
+	p.X.Label.Text = "Time"
 	p.Y.Label.Text = "Value"
 
 	p.Add(plotter.NewGrid())
@@ -52,7 +55,7 @@ func PlotBands(symbol string, all []bands.Band) {
 	ldown.LineStyle.Color = color.RGBA{G: 255, A: 255}
 
 	p.Add(lclose, lsma, lup, ldown)
-	p.Legend.Add("Closing", lclose)
+	p.Legend.Add("Close", lclose)
 	p.Legend.Add("SMA", lsma)
 	p.Legend.Add("Up", lup)
 	p.Legend.Add("Down", ldown)

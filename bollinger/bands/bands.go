@@ -1,10 +1,11 @@
 package bands
 
 import (
-	"github.com/insionng/bollinger-bands/bollinger/settings"
-	"github.com/insionng/bollinger-bands/bollinger/ystock"
 	"math"
 	"time"
+
+	"github.com/insionng/bollinger-bands/bollinger/data"
+	"github.com/insionng/bollinger-bands/bollinger/settings"
 	//"fmt"
 )
 
@@ -16,25 +17,34 @@ type Band struct {
 	Down  float64
 }
 
-// Calculates bands for all days
-func All(symbol string) (bands []Band) {
-	historical := ystock.HistoricalClosingValues(symbol, settings.TODAY, settings.SMA_DAYS+settings.GRAPH_DAYS)
+const (
+	DAYS    = 60 * 60 * 24
+	HOURS   = 60 * 60
+	MINUTES = 60
+)
+
+//CalculatesBands Calculates bands for all times
+func CalculatesBands(symbol string) (bands []Band) {
+
+	historical := data.HistoricalClosingValues(symbol, settings.StartTime, HOURS, (settings.SMA_TIME + settings.GRAPH_TIME))
 
 	start := 0
-	end := settings.SMA_DAYS
+	end := settings.SMA_TIME
 
-	for i := 0; i < settings.GRAPH_DAYS; i++ {
+	for i := 0; i < settings.GRAPH_TIME; i++ {
 		//fmt.Println(historical[start].Date.String(), historical[end-1].Date.String())
-		bands = append(bands, One(historical[start:end]))
-		start++
-		end++
+		if len(historical) >= end {
+			bands = append(bands, CalculatesBand(historical[start:end]))
+			start++
+			end++
+		}
 	}
 
 	return
 }
 
-// Calculates bands for one day
-func One(historical []ystock.ClosingValue) (result Band) {
+//CalculatesBand Calculates bands for one time
+func CalculatesBand(historical []data.ClosingValue) (result Band) {
 	size := len(historical)
 	//fmt.Println(size, historical[0].Date.String(), historical[size-1].Date.String())
 

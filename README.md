@@ -53,7 +53,7 @@ it hard to define completely safe invesment strategies, there will always
 be risk involved.
 
 
-# 3 GO:
+# 3 Golang:
 
 * test/main.go: 
     * generates (outputs to $PWD/$SYMBOL.png) bollinger bands, ex: go run main.go -p AMZN FB
